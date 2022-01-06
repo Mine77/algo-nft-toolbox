@@ -1,3 +1,2 @@
-# to do
-* check duplicated nft data
-* send to ipfs
+# Algorand NFT Toolbox
+A simple tool for minting ARC3 NFTs in batch.
