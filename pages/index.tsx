@@ -23,7 +23,9 @@ const Home: NextPage = () => {
         localStorage.setItem("accounts.timestamp", JSON.stringify(timeObject));
         router.push("/all");
       })
-      .catch(alert.error);
+      .catch((error)=>{
+        alert.error(String(error));
+      });
   };
 
   useEffect(() => {

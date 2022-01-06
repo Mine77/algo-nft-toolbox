@@ -5,7 +5,6 @@ import AlertContext from "components/context/alertContext";
 import NftCard from "components/nftCard";
 
 export const Events: NextPage = () => {
-  
   const alert = useContext(AlertContext);
 
   return (

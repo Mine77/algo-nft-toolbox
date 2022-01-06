@@ -1,5 +1,4 @@
 import type { NextPage } from "next";
-import { AlgodContextWrapper } from "./context/algodContext";
 import NavBar from "./navbar";
 
 const Layout: NextPage = ({ children }) => {
