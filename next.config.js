@@ -5,9 +5,9 @@ module.exports = {
     PURESTAKE_API: process.env.PURESTAKE_API,
     IPFS_API: process.env.IPFS_API,
   },
-  typescript: {
-    ignoreBuildErrors: true
-  },
+  // typescript: {
+  //   ignoreBuildErrors: true
+  // },
 };
 
 

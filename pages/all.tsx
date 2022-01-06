@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import NFTCard from "components/nftCard";
+import NFTCard from "../components/nftCard";
 import Layout from "components/layout";
 import { useContext } from "react";
 import AlertContext from "components/context/alertContext";
