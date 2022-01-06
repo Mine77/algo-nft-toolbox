@@ -48,7 +48,7 @@ const Home: NextPage = () => {
             </h1>
             <div className="flex items-center justify-center">
               {walletStatus ? (
-                <Link href="/all">
+                <Link href="/mint" passHref>
                   <button
                     type="button"
                     className="py-2 px-4 bg-gradient-to-r from-blue-400 to-blue-800 text-white  transition ease-in duration-200 text-center text-base font-semibold shadow-md rounded-lg"
