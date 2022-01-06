@@ -50,8 +50,8 @@ const GroupEditModal = (props: GroupEditModalAPI) => {
                         </div>
                         <div className="items-center space-x-4 py-2">
                           <p className="text-gray-600">
-                            Use "[id]" to replace part of the
-                            string{" "}
+                            Use [id] and [name] to replace part of the
+                            string
                           </p>
                         </div>
                       </div>

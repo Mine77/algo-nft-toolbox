@@ -328,6 +328,7 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
                                 <a
                                   href={assets[i].url}
                                   target="_blank"
+                                  rel="noreferrer"
                                   className="text-blue-500"
                                 >
                                   {assets[i].assetId}

@@ -4,6 +4,7 @@ const NFTCard = (props) => {
       <a
         href={"https://algoexplorer.io/asset/" + props.NFTID}
         target="_blank"
+        rel="noreferrer"
         className="w-full block h-full"
       >
         <img
