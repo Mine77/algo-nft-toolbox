@@ -1,13 +1,14 @@
-interface NFTCardProps {
+import { NextPage } from "next";
+
+interface Props {
   Standard:string,
   Name:string,
   Description:string,
   NFTID:string,
   CreatedTime:string
-
 }
 
-const NFTCard = (props) => {
+const NFTCard:NextPage<Props> = (props) => {
   return (
     <div className="overflow-hidden shadow-lg rounded-lg h-90 w-90 md:w-80 cursor-pointer m-auto">
       <a
