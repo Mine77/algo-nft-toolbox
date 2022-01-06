@@ -88,6 +88,7 @@ const MintNFT: NextPage = () => {
         });
         signedTxgEncodedArray.push(signedTxgEncoded);
       } catch (error) {
+        console.log(error);
         alert.error(String(error));
       }
     }
