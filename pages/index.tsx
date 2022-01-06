@@ -21,7 +21,7 @@ const Home: NextPage = () => {
         localStorage.setItem("accounts.address", accounts[0].address);
         var timeObject = { value: "value", timestamp: new Date().getTime() };
         localStorage.setItem("accounts.timestamp", JSON.stringify(timeObject));
-        router.push("/all");
+        router.push("/mint");
       })
       .catch((error)=>{
         alert.error(String(error));
