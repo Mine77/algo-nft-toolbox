@@ -8,7 +8,7 @@ interface Props {
   CreatedTime:string
 }
 
-const NFTCard:NextPage<Props> = (props) => {
+const NftCard:NextPage<Props> = (props) => {
   return (
     <div className="overflow-hidden shadow-lg rounded-lg h-90 w-90 md:w-80 cursor-pointer m-auto">
       <a
@@ -50,4 +50,4 @@ const NFTCard:NextPage<Props> = (props) => {
   );
 };
 
-export default NFTCard;
+export default NftCard;

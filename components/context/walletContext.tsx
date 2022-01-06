@@ -31,12 +31,31 @@ export const WalletContextWrapper = (props) => {
       .catch((err) => {
         console.log(err);
       });
+
+    const localTimestamp = localStorage.getItem("accounts.timestamp")
+    const localName = localStorage.getItem("accounts.name")
+    const localAddress = localStorage.getItem("accounts.address")
+    
+
+    
+    if (localTimestamp === null || localName === null || localAddress == null) {
+      setAccounts([
+        {
+          name: "",
+          address: "",
+          expired: true,
+        },
+      ]);
+      return ;
+    }
+
     //check expiration
     const oldTimeObject = JSON.parse(
       localStorage.getItem("accounts.timestamp")
     );
     const oldTime = oldTimeObject.timestamp;
     const now = new Date().getTime();
+
 
     //handle expiration
     if (now - oldTime > expirePeriod) {
@@ -47,8 +66,11 @@ export const WalletContextWrapper = (props) => {
           expired: true,
         },
       ]);
-    } else {
-      // get accounts from cookie
+      return ;
+    }
+
+    if (now - oldTime < expirePeriod) {
+      // get accounts from local storage
       setAccounts([
         {
           name: localStorage.getItem("accounts.name"),
