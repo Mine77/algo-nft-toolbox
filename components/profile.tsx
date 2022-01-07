@@ -51,10 +51,9 @@ const Profile = () => {
       <div className="flex flex-row items-center">
         <div className="self-auto w-1/2">
           <h1 className="text-xl font-semibold text-black dark:text-white truncate max-w-1/2">
-            {/* {walletContext.accounts.length > 0
+            {walletContext.accounts.length > 0
               ? walletContext.accounts[0].name
-              : null} */}
-              Wallet #1 asdasd
+              : null}
           </h1>
         </div>
         <div className="ml-2 w-1/2">
