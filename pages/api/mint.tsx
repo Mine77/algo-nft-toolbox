@@ -55,7 +55,7 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
     res.status(200).json({ assetIds: assetIds });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({ error: String(error) });
   }
 };
 

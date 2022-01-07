@@ -24,9 +24,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       break;
   }
 
-  const txParams = await algodClient.getTransactionParams().do();
-
-  res.status(200).json({ txParams: txParams });
+  try {
+    const txParams = await algodClient.getTransactionParams().do();
+    res.status(200).json({ txParams: txParams });
+  } catch (error) {
+    res.status(400).send({ error: String(error) });
+  }
 };
 
 export default handler;

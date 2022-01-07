@@ -68,13 +68,13 @@ const MintNFT: NextPage = () => {
   };
 
   const createAsset = (assetData) => {
-    var p = new Promise(async (resolve,reject)=>{
+    var p = new Promise(async (resolve, reject) => {
       const txgg = ConstructGroupedCreateAssetTx(
         walletContext.accounts[0].address,
         assetData,
         txParams.data
       );
-  
+
       var signedTxgEncodedArray = [];
       for (let i = 0; i < txgg.length; i++) {
         try {
@@ -92,7 +92,7 @@ const MintNFT: NextPage = () => {
           reject(String(error));
         }
       }
-  
+
       var assetIds = [];
       for (let i = 0; i < signedTxgEncodedArray.length; i++) {
         try {
@@ -109,8 +109,8 @@ const MintNFT: NextPage = () => {
           reject(String(error));
         }
       }
-      resolve(assetIds) ;
-    })
+      resolve(assetIds);
+    });
     return p;
   };
 
@@ -130,7 +130,7 @@ const MintNFT: NextPage = () => {
   };
 
   const handleMint = (tableData: TableDataAPI) => {
-    var p = new Promise(async (resolve,reject) => {
+    var p = new Promise(async (resolve, reject) => {
       try {
         const imgFiles = tableData.map((data) => {
           return data.imgFile;
@@ -207,7 +207,6 @@ const MintNFT: NextPage = () => {
 
         const assetIds = await createAsset(assetData);
         resolve(assetIds);
-        
       } catch (error) {
         reject(String(error));
       }

@@ -2,7 +2,7 @@ import algosdk from "algosdk";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { address,network } = req.query;
+  const { address, network } = req.query;
 
   const testnetServer = "https://testnet-algorand.api.purestake.io/ps2";
   const mainnetServer = "https://mainnet-algorand.api.purestake.io/ps2";
@@ -24,9 +24,12 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       break;
   }
 
-  const algoBalance = await algodClient.accountInformation(address).do();
-
-  res.status(200).json({ accountInfo: algoBalance });
+  try {
+    const algoBalance = await algodClient.accountInformation(address).do();
+    res.status(200).json({ accountInfo: algoBalance });
+  } catch (error) {
+    res.status(400).send({ error: String(error) });
+  }
 };
 
 export default handler;
