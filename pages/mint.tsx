@@ -67,49 +67,51 @@ const MintNFT: NextPage = () => {
     return p;
   };
 
-  const createAsset = async (assetData) => {
-    const txgg = ConstructGroupedCreateAssetTx(
-      walletContext.accounts[0].address,
-      assetData,
-      txParams.data
-    );
-
-    var signedTxgEncodedArray = [];
-    for (let i = 0; i < txgg.length; i++) {
-      try {
-        const signedTxg = await walletContext.myAlgoConnect.signTransaction(
-          txgg[i].map((txn) => txn.toByte())
-        );
-        const signedTxgEncoded = signedTxg.map((signedTx) => {
-          return {
-            txID: signedTx.txID,
-            blob: Buffer.from(signedTx.blob).toString("base64"),
-          };
-        });
-        signedTxgEncodedArray.push(signedTxgEncoded);
-      } catch (error) {
-        console.log(error);
-        alert.error(String(error));
-      }
-    }
-
-    var assetIds = [];
-    for (let i = 0; i < signedTxgEncodedArray.length; i++) {
-      try {
-        const result = await postMint(
-          signedTxgEncodedArray[i],
-          algodContext.network
-        );
-        if (result.status === 400) {
-          alert.error(result.response.text);
-          return;
+  const createAsset = (assetData) => {
+    var p = new Promise(async (resolve,reject)=>{
+      const txgg = ConstructGroupedCreateAssetTx(
+        walletContext.accounts[0].address,
+        assetData,
+        txParams.data
+      );
+  
+      var signedTxgEncodedArray = [];
+      for (let i = 0; i < txgg.length; i++) {
+        try {
+          const signedTxg = await walletContext.myAlgoConnect.signTransaction(
+            txgg[i].map((txn) => txn.toByte())
+          );
+          const signedTxgEncoded = signedTxg.map((signedTx) => {
+            return {
+              txID: signedTx.txID,
+              blob: Buffer.from(signedTx.blob).toString("base64"),
+            };
+          });
+          signedTxgEncodedArray.push(signedTxgEncoded);
+        } catch (error) {
+          reject(String(error));
         }
-        assetIds = assetIds.concat(result.assetIds);
-      } catch (error) {
-        alert.error(error);
       }
-    }
-    return assetIds;
+  
+      var assetIds = [];
+      for (let i = 0; i < signedTxgEncodedArray.length; i++) {
+        try {
+          const result = await postMint(
+            signedTxgEncodedArray[i],
+            algodContext.network
+          );
+          if (result.status === 400) {
+            alert.error(result.response.text);
+            return;
+          }
+          assetIds = assetIds.concat(result.assetIds);
+        } catch (error) {
+          reject(String(error));
+        }
+      }
+      resolve(assetIds) ;
+    })
+    return p;
   };
 
   const uploadToIPFS = (files: Array<any>) => {

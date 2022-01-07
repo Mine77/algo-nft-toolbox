@@ -67,7 +67,12 @@ const Home: NextPage = () => {
           <div className="p-10">
             <h1 className="font-sans font-bold text-7xl p-7">
               Algorand NFT Toolbox
+              <br />
+              <span className="text-sm flex items-center justify-center">
+                Work In Progress: use at your own risk
+              </span>
             </h1>
+
             <div className="flex items-center justify-center">
               {walletStatus ? (
                 <Link href="/mint" passHref>

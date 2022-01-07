@@ -217,6 +217,7 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
       })
       .catch((error) => {
         alert.error(String(error));
+        setMintStatus(MintStatus.Ready);
       });
   };
 
