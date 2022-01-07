@@ -30,17 +30,17 @@ const AlertProvider = ({ children }) => {
         success: (text: string, timeout: number = 10) => {
           setAlertText(text);
           setAlert(AlertStatus.Success);
-          // setTimeout(() => {
-          //   setAlert(AlertStatus.None);
-          // }, timeout * 1000)
+          setTimeout(() => {
+            setAlert(AlertStatus.None);
+          }, timeout * 1000)
 
         },
         error: (text: string, timeout: number = 10) => {
           setAlertText(text);
           setAlert(AlertStatus.Error);
-          // setTimeout(() => {
-          //   setAlert(AlertStatus.None);
-          // }, timeout * 1000)
+          setTimeout(() => {
+            setAlert(AlertStatus.None);
+          }, timeout * 1000)
         },
         clear: () => (setAlert(AlertStatus.None)),
       }}
