@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import AlertContext from "./context/alertContext";
 import { AlgodContext } from "./context/algodContext";
 import FileInputButton from "./fileInputButton";
 import GroupEditModal from "./groupEditModal";
@@ -51,6 +52,9 @@ export interface TableDataAPI extends Array<TableDataItemAPI> {}
 interface NftDataArray extends Array<NftData> {}
 
 const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
+
+  const alert = useContext(AlertContext);
+
   const algodContext = useContext(AlgodContext);
   // header
   const headers = [
@@ -101,11 +105,9 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
   );
 
   // button event
-  const handleRemoveClick = (index) => {
-    let newNftDataArray: NftDataArray = [...nftDataArray];
-    newNftDataArray.splice(index, 1);
-    newNftDataArray = updateNftDataId(newNftDataArray);
-    setNftDataArray(newNftDataArray);
+
+  const handleInputClick = (event) => {
+    event.target.select();
   };
 
   const handleAddData = (newData) => {
@@ -114,8 +116,30 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
     );
   };
 
-  const handleInputClick = (event) => {
-    event.target.select();
+  const handleRemoveClick = (index) => {
+    let newNftDataArray: NftDataArray = [...nftDataArray];
+    newNftDataArray.splice(index, 1);
+    newNftDataArray = updateNftDataId(newNftDataArray);
+
+    setNftDataArray(newNftDataArray);
+  };
+
+  useEffect(()=>{
+    if(nftDataArray === []) return;
+    nftDataArray.map((item)=>{
+      item.refs.name.current.value = item.data.name;
+      item.refs.unit.current.value = item.data.unit;
+      item.refs.description.current.value = item.data.description;
+    })
+  },[nftDataArray])
+
+  const handleInputChange = (event) => {
+    const id = event.target.id;
+    const index = id.match(/\d+/)[0];
+    const type = id.match(/\D+/)[0];
+    let newNftDataArray: NftDataArray = [...nftDataArray];
+    newNftDataArray[parseInt(index)].data[type] = event.target.value;
+    setNftDataArray(newNftDataArray);
   };
 
   const handleSave = (editData: {
@@ -131,35 +155,29 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
             ? editData.name
                 .replaceAll("[id]", (item.data.id + 1).toString())
                 .replaceAll("[name]", item.data.name)
-            : item.data.name,
+            : item.refs.name.current.value,
         unit:
           editData.unit !== ""
             ? editData.unit
                 .replaceAll("[id]", (item.data.id + 1).toString())
                 .replaceAll("[name]", item.data.name)
-            : item.data.unit,
+            : item.refs.unit.current.value,
         description:
           editData.description !== ""
             ? editData.description
                 .replaceAll("[id]", (item.data.id + 1).toString())
                 .replaceAll("[name]", item.data.name)
-            : item.data.description,
+            : item.refs.description.current.value,
       };
       newNftDataArray[i].data.name = newData.name;
       newNftDataArray[i].data.unit = newData.unit;
       newNftDataArray[i].data.description = newData.description;
+      item.refs.name.current.value = newData.name;
+      item.refs.unit.current.value = newData.unit;
+      item.refs.description.current.value = newData.description;
     });
     setNftDataArray(newNftDataArray);
   };
-
-  useEffect(() => {
-    if (nftDataArray === []) return;
-    nftDataArray.map((item) => {
-      item.refs.name.current.value = item.data.name;
-      item.refs.unit.current.value = item.data.unit;
-      item.refs.description.current.value = item.data.description;
-    });
-  }, [{ nftDataArray }]);
 
   // handle mint
   enum MintStatus {
@@ -172,7 +190,11 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
 
   const handleMintClick = () => {
     let tableData: TableDataAPI = [];
+
     nftDataArray.map((item) => tableData.push(item.data));
+
+    console.log(tableData);
+    console.log(nftDataArray);
     setMintStatus(MintStatus.InMint);
 
     const networkUrl = algodContext.network === "Testnet" ? "testnet." : "";
@@ -190,6 +212,7 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
         }))
       );
       setMintStatus(MintStatus.Completed);
+      alert.success("Mint completed")
     });
   };
 
@@ -264,20 +287,24 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
                     </td>
                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                       <input
-                        type="text"
                         ref={item.refs.name}
+                        id={item.data.id + "name"}
+                        type="text"
                         className="outline-none border-0 focus:border-b-2 focus:border-blue-500"
                         placeholder="Enter name"
                         defaultValue={item.data.name}
                         onClick={handleInputClick}
+                        onChange={handleInputChange}
                       />
                     </td>
                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                       <input
-                        type="text"
                         ref={item.refs.unit}
+                        id={item.data.id + "unit"}
+                        type="text"
                         className="outline-none border-0 focus:border-b-2 focus:border-blue-500"
                         placeholder="Enter NFT unit name"
+                        onChange={handleInputChange}
                       />
                     </td>
                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -292,8 +319,10 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                       <textarea
                         ref={item.refs.description}
+                        id={item.data.id + "description"}
                         className="outline-none border-0 w-full break-words focus:border-b-2 focus:border-blue-500 resize-none"
                         placeholder="Enter NFT Description"
+                        onChange={handleInputChange}
                       ></textarea>
                     </td>
                     <td className="py-2 border-b border-gray-200 bg-white">
