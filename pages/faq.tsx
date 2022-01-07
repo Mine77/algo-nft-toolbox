@@ -11,9 +11,7 @@ import { MDXRemote } from "next-mdx-remote";
 export const getStaticProps: GetStaticProps = async () => {
   const faqFile = path.join(process.cwd(), "pages/faq.md");
   const faqMD = await fs.readFile(faqFile, "utf8");
-  console.log(faqMD);
   const mdxSource = await serialize(faqMD);
-  // const faqHtml = "asdasdasd"
   return {
     props: {
       source: mdxSource,

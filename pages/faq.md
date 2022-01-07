@@ -11,7 +11,7 @@ The project has only been tested on Chrome for now.
 Your browser has blocked the popup window triggered by MyAlgo Wallet's signature function.
 Allow it by clicking here:
 
-![image-20220107182316692](https://tva1.sinaimg.cn/large/008i3skNly1gy5a5qnf09j30i80cqwfl.jpg)
+![image-20220107182316692](/008i3skNly1gy5a5qnf09j30i80cqwfl.jpeg)
 
 
 ## Bugs and feature request?
