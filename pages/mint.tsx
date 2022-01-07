@@ -128,7 +128,7 @@ const MintNFT: NextPage = () => {
   };
 
   const handleMint = (tableData: TableDataAPI) => {
-    var p = new Promise(async (resolve) => {
+    var p = new Promise(async (resolve,reject) => {
       try {
         const imgFiles = tableData.map((data) => {
           return data.imgFile;
@@ -205,8 +205,9 @@ const MintNFT: NextPage = () => {
 
         const assetIds = await createAsset(assetData);
         resolve(assetIds);
+        
       } catch (error) {
-        alert.error(String(error));
+        reject(String(error));
       }
     });
     return p;

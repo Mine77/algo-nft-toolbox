@@ -198,21 +198,26 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
 
     const networkUrl = algodContext.network === "Testnet" ? "testnet." : "";
 
-    props.onMint(tableData).then((assetIds) => {
-      // console.log(assetIds);
-      if (assetIds === []) {
-        setMintStatus(MintStatus.Ready);
-        return;
-      }
-      setAssets(
-        assetIds.map((assetId) => ({
-          assetId: assetId,
-          url: "https://" + networkUrl + "algoexplorer.io/asset/" + assetId,
-        }))
-      );
-      setMintStatus(MintStatus.Completed);
-      alert.success("Mint completed");
-    });
+    props
+      .onMint(tableData)
+      .then((assetIds) => {
+        // console.log(assetIds);
+        if (assetIds === []) {
+          setMintStatus(MintStatus.Ready);
+          return;
+        }
+        setAssets(
+          assetIds.map((assetId) => ({
+            assetId: assetId,
+            url: "https://" + networkUrl + "algoexplorer.io/asset/" + assetId,
+          }))
+        );
+        setMintStatus(MintStatus.Completed);
+        alert.success("Mint completed");
+      })
+      .catch((error) => {
+        alert.error(String(error));
+      });
   };
 
   return (
