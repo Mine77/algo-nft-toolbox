@@ -200,16 +200,17 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
 
     props
       .onMint(tableData)
-      .then((assetIds) => {
+      .then((assetInfo) => {
         // console.log(assetIds);
-        if (assetIds === []) {
+        if (!assetInfo) {
           setMintStatus(MintStatus.Ready);
           return;
         }
         setAssets(
-          assetIds.map((assetId) => ({
-            assetId: assetId,
-            url: "https://" + networkUrl + "algoexplorer.io/asset/" + assetId,
+          assetInfo.map((info) => ({
+            assetId: info.assetId,
+            assetCid: info.assetCid,
+            url: "https://" + networkUrl + "algoexplorer.io/asset/" + info.assetId,
           }))
         );
         setMintStatus(MintStatus.Completed);
@@ -368,6 +369,18 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
                                   className="text-blue-500"
                                 >
                                   {assets[i].assetId}
+                                </a>
+                              </span>
+                            </p>
+                            <p className="text-sm">
+                              <span>
+                                <a
+                                  href={"https://ipfs.io/ipfs/" + assets[i].assetCid}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-blue-500"
+                                >
+                                  IPFS Link
                                 </a>
                               </span>
                             </p>
