@@ -49,14 +49,15 @@ const Profile = () => {
   return (
     <div className="flex flex-col pt-6 p-4">
       <div className="flex flex-row items-center">
-        <div className="self-auto">
-          <p className="text-md font-semibold text-black dark:text-white text-2xl">
-            {walletContext.accounts.length > 0
+        <div className="self-auto w-1/2">
+          <h1 className="text-xl font-semibold text-black dark:text-white truncate max-w-1/2">
+            {/* {walletContext.accounts.length > 0
               ? walletContext.accounts[0].name
-              : null}
-          </p>
+              : null} */}
+              Wallet #1 asdasd
+          </h1>
         </div>
-        <div className="ml-auto">
+        <div className="ml-2 w-1/2">
           <span className="text-gray-700 font-medium align-middle">
             {algodContext.network}
           </span>
