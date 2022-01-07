@@ -101,8 +101,7 @@ const MintNFT: NextPage = () => {
             algodContext.network
           );
           if (result.status === 400) {
-            alert.error(result.response.text);
-            return;
+            reject(result.response.error);
           }
           assetIds = assetIds.concat(result.assetIds);
         } catch (error) {
