@@ -52,7 +52,6 @@ export interface TableDataAPI extends Array<TableDataItemAPI> {}
 interface NftDataArray extends Array<NftData> {}
 
 const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
-
   const alert = useContext(AlertContext);
 
   const algodContext = useContext(AlgodContext);
@@ -124,14 +123,14 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
     setNftDataArray(newNftDataArray);
   };
 
-  useEffect(()=>{
-    if(nftDataArray === []) return;
-    nftDataArray.map((item)=>{
+  useEffect(() => {
+    if (nftDataArray === []) return;
+    nftDataArray.map((item) => {
       item.refs.name.current.value = item.data.name;
       item.refs.unit.current.value = item.data.unit;
       item.refs.description.current.value = item.data.description;
-    })
-  },[nftDataArray])
+    });
+  }, [nftDataArray]);
 
   const handleInputChange = (event) => {
     const id = event.target.id;
@@ -212,38 +211,40 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
         }))
       );
       setMintStatus(MintStatus.Completed);
-      alert.success("Mint completed")
+      alert.success("Mint completed");
     });
   };
 
   return (
     <div>
-      <div className="flex flex-row items-center justify-top">
-        <div className="flex">
-          <FileInputButton text="Add New" onDataChange={handleAddData} />
-        </div>
+      {mintStatus == MintStatus.Ready ? (
+        <div className="flex flex-row items-center justify-top">
+          <div className="flex">
+            <FileInputButton text="Add New" onDataChange={handleAddData} />
+          </div>
 
-        <div className="flex ml-4">
-          <button
-            onClick={() => {
-              setShowGroupEditModal(true);
-            }}
-            type="button"
-            className="py-2 px-8  bg-blue-600 hover:bg-blue-700 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md outline-none rounded-lg "
-          >
-            Group Edit
-          </button>
+          <div className="flex ml-4">
+            <button
+              onClick={() => {
+                setShowGroupEditModal(true);
+              }}
+              type="button"
+              className="py-2 px-8  bg-blue-600 hover:bg-blue-700 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md outline-none rounded-lg "
+            >
+              Group Edit
+            </button>
+          </div>
+          <div className="flex ml-auto">
+            <button
+              onClick={handleMintClick}
+              type="button"
+              className="py-2 px-8  bg-blue-600 hover:bg-blue-700 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md outline-none rounded-lg "
+            >
+              Mint All({nftDataArray.length})
+            </button>
+          </div>
         </div>
-        <div className="flex ml-auto">
-          <button
-            onClick={handleMintClick}
-            type="button"
-            className="py-2 px-8  bg-blue-600 hover:bg-blue-700 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md outline-none rounded-lg "
-          >
-            Mint All({nftDataArray.length})
-          </button>
-        </div>
-      </div>
+      ) : null}
 
       <div className="container mx-auto">
         <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">

@@ -33,31 +33,30 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   let signedTxgEncoded = req.body.signedGroupTx;
-  
-  const txIdAray = signedTxgEncoded.map((data) => {
+
+  const txIdArray = signedTxgEncoded.map((data) => {
     return data.txID;
   });
   const signedTxgBlob = signedTxgEncoded.map(
     (data) => new Uint8Array(Buffer.from(data.blob, "base64"))
   );
 
-  SendTransaction(algodClient, signedTxgBlob)
-    .then(() => {
-      var promise = [];
-      txIdAray.map((txId) => {
-        promise.push(algodClient.pendingTransactionInformation(txId).do());
-      });
-      var assetIds = [];
-      Promise.all(promise)
-        .then((ptxs) => {
-          ptxs.map((ptx) => {
-            assetIds.push(ptx["asset-index"]);
-          });
-          res.status(200).json({ assetIds: assetIds });
-        })
-        .catch((error) => res.status(400).send(error));
-    })
-    .catch((error) => res.status(400).send(error));
+  try {
+    await SendTransaction(algodClient, signedTxgBlob);
+    var assetIds = [];
+    var promise = [];
+    txIdArray.map((txId) => {
+      promise.push(algodClient.pendingTransactionInformation(txId).do());
+    });
+    const ptxs = await Promise.all(promise);
+    var assetIds = [];
+    ptxs.map((ptx) => {
+      assetIds.push(ptx["asset-index"]);
+    });
+    res.status(200).json({ assetIds: assetIds });
+  } catch (error) {
+    res.status(400).send(error);
+  }
 };
 
 export default handler;
