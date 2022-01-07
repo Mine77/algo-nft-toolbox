@@ -67,8 +67,8 @@ const MintNFT: NextPage = () => {
     return p;
   };
 
-  const createAsset = (assetData) => {
-    var p = new Promise(async (resolve, reject) => {
+  const createAsset  = (assetData) => {
+    var p = new Promise<Array<number>>(async (resolve, reject) => {
       const txgg = ConstructGroupedCreateAssetTx(
         walletContext.accounts[0].address,
         assetData,
@@ -205,7 +205,12 @@ const MintNFT: NextPage = () => {
         });
 
         const assetIds = await createAsset(assetData);
-        resolve(assetIds);
+        var assetInfo = assetIds.map((id,i)=>{return {
+          assetId:id,
+          assetCid: arc3JSONCids[i]
+        }})
+        if (assetIds === [] ) assetInfo=null;
+        resolve(assetInfo);
       } catch (error) {
         reject(String(error));
       }
