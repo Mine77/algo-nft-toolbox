@@ -151,8 +151,6 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
     const id = event.target.id;
     const index = id.match(/\d+/)[0];
     const value = event.target.value;
-    console.log(index);
-    console.log(value);
     let newNftDataArray: NftDataArray = [...nftDataArray];
     newNftDataArray[parseInt(index)].data.standard = value;
     switch (value) {
@@ -222,35 +220,33 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
 
     nftDataArray.map((item) => tableData.push(item.data));
 
-    console.log(tableData);
+    setMintStatus(MintStatus.InMint);
 
-    // setMintStatus(MintStatus.InMint);
+    const networkUrl = algodContext.network === "Testnet" ? "testnet." : "";
 
-    // const networkUrl = algodContext.network === "Testnet" ? "testnet." : "";
-
-    // props
-    //   .onMint(tableData)
-    //   .then((assetInfo) => {
-    //     // console.log(assetIds);
-    //     if (!assetInfo) {
-    //       setMintStatus(MintStatus.Ready);
-    //       return;
-    //     }
-    //     setAssets(
-    //       assetInfo.map((info) => ({
-    //         assetId: info.assetId,
-    //         assetCid: info.assetCid,
-    //         url:
-    //           "https://" + networkUrl + "algoexplorer.io/asset/" + info.assetId,
-    //       }))
-    //     );
-    //     setMintStatus(MintStatus.Completed);
-    //     alert.success("Mint completed");
-    //   })
-    //   .catch((error) => {
-    //     alert.error(String(error));
-    //     setMintStatus(MintStatus.Ready);
-    //   });
+    props
+      .onMint(tableData)
+      .then((assetInfo) => {
+        // console.log(assetIds);
+        if (!assetInfo) {
+          setMintStatus(MintStatus.Ready);
+          return;
+        }
+        setAssets(
+          assetInfo.map((info) => ({
+            assetId: info.assetId,
+            assetCid: info.assetCid,
+            url:
+              "https://" + networkUrl + "algoexplorer.io/asset/" + info.assetId,
+          }))
+        );
+        setMintStatus(MintStatus.Completed);
+        alert.success("Mint completed");
+      })
+      .catch((error) => {
+        alert.error(String(error));
+        setMintStatus(MintStatus.Ready);
+      });
   };
 
   return (

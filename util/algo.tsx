@@ -5,13 +5,14 @@ export interface AssetData {
   assetName: string;
   unitName: string;
   assetUrl: string;
+  decimal: number;
   assetMetadataHash: string;
   note: string;
 }
 
 function ConstructCreateAssetTx(address: string, data: AssetData, txParams) {
-  const decimals = 0;
-  const totalIssuance = 1;
+  const decimals = data.decimal;
+  const totalIssuance = 1 * (10 ** decimals);
   const manager = address;
   const reserve = address;
   const freeze = address;

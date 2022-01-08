@@ -157,6 +157,10 @@ const MintNFT: NextPage = () => {
                 type: "string",
                 description: data.name,
               },
+              decimals: {
+                type:"integer",
+                description: data.decimal.toString()
+              },
               description: {
                 type: "string",
                 description: data.description,
@@ -176,6 +180,8 @@ const MintNFT: NextPage = () => {
             },
           };
         });
+
+        console.log(arc3JSONs);
 
         var arc3JSONSha256s = [];
         var arc3JSONCids = [];
@@ -198,11 +204,14 @@ const MintNFT: NextPage = () => {
           return {
             assetName: data.name,
             unitName: data.unit,
+            decimal: Number(data.decimal),
             assetUrl: "ipfs://" + arc3JSONCids[i] + "#arc3",
             assetMetadataHash: arc3JSONSha256s[i],
             note: "Creation of an ARC3 NFT",
           };
         });
+
+        console.log(assetData);
 
         const assetIds = await createAsset(assetData);
         var assetInfo = assetIds.map((id,i)=>{return {
