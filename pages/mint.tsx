@@ -69,6 +69,7 @@ const MintNFT: NextPage = () => {
 
   const createAsset  = (assetData) => {
     var p = new Promise<Array<number>>(async (resolve, reject) => {
+      if (txParams.isError) reject("Get transaction parameter error");
       const txgg = ConstructGroupedCreateAssetTx(
         walletContext.accounts[0].address,
         assetData,
