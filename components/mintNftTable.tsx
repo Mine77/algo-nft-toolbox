@@ -19,19 +19,17 @@ interface PropsData {
 
 interface PropsDataArray extends Array<PropsData> {}
 
+enum NFTStandard {
+  fracArc3 = "Fractional ARC3",
+  pureArc3 = "Pure ARC3",
+}
+
 interface NftData {
-  data: {
-    id: number;
-    name: string;
-    image: string;
-    imgFile: File;
-    unit: string;
-    standard: string;
-    description: string;
-  };
+  data: TableDataItemAPI;
   refs: {
     name: MutableRefObject<HTMLInputElement>;
     unit: MutableRefObject<HTMLInputElement>;
+    decimal: MutableRefObject<HTMLInputElement>;
     description: MutableRefObject<HTMLTextAreaElement>;
     status: MutableRefObject<HTMLDivElement>;
   };
@@ -43,7 +41,8 @@ export interface TableDataItemAPI {
   image: string;
   imgFile: File;
   unit: string;
-  standard: string;
+  decimal: number;
+  standard: NFTStandard | string;
   description: string;
 }
 
@@ -61,6 +60,7 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
     "Image",
     "NFT Name",
     "NFT Unit",
+    "NFT Decimal",
     "NFT Standard",
     "Description",
     "",
@@ -80,13 +80,15 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
         id: i,
         ...data,
         unit: "",
-        standard: "ARC3",
+        decimal: 0,
+        standard: NFTStandard.pureArc3,
         description: "",
         imgFile: data.imgFile,
       },
       refs: {
         name: createRef(),
         unit: createRef(),
+        decimal: createRef(),
         description: createRef(),
         status: createRef(),
       },
@@ -136,8 +138,36 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
     const id = event.target.id;
     const index = id.match(/\d+/)[0];
     const type = id.match(/\D+/)[0];
+    const value = event.target.value;
+    if (type === "decimal" && (Number(value) > 10 || Number(value) < 0)) {
+      event.target.value = null;
+    }
     let newNftDataArray: NftDataArray = [...nftDataArray];
-    newNftDataArray[parseInt(index)].data[type] = event.target.value;
+    newNftDataArray[parseInt(index)].data[type] = value;
+    setNftDataArray(newNftDataArray);
+  };
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = event.target.id;
+    const index = id.match(/\d+/)[0];
+    const value = event.target.value;
+    console.log(index);
+    console.log(value);
+    let newNftDataArray: NftDataArray = [...nftDataArray];
+    newNftDataArray[parseInt(index)].data.standard = value;
+    switch (value) {
+      case NFTStandard.fracArc3:
+        nftDataArray[parseInt(index)].refs.decimal.current.disabled = false;
+        nftDataArray[parseInt(index)].refs.decimal.current.value = "1";
+        newNftDataArray[parseInt(index)].data.decimal = 1;
+        break;
+      case NFTStandard.pureArc3:
+        nftDataArray[parseInt(index)].refs.decimal.current.disabled = true;
+        nftDataArray[parseInt(index)].refs.decimal.current.value = "0";
+        newNftDataArray[parseInt(index)].data.decimal = 0;
+        break;
+    }
+
     setNftDataArray(newNftDataArray);
   };
 
@@ -193,33 +223,34 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
     nftDataArray.map((item) => tableData.push(item.data));
 
     console.log(tableData);
-    console.log(nftDataArray);
-    setMintStatus(MintStatus.InMint);
 
-    const networkUrl = algodContext.network === "Testnet" ? "testnet." : "";
+    // setMintStatus(MintStatus.InMint);
 
-    props
-      .onMint(tableData)
-      .then((assetInfo) => {
-        // console.log(assetIds);
-        if (!assetInfo) {
-          setMintStatus(MintStatus.Ready);
-          return;
-        }
-        setAssets(
-          assetInfo.map((info) => ({
-            assetId: info.assetId,
-            assetCid: info.assetCid,
-            url: "https://" + networkUrl + "algoexplorer.io/asset/" + info.assetId,
-          }))
-        );
-        setMintStatus(MintStatus.Completed);
-        alert.success("Mint completed");
-      })
-      .catch((error) => {
-        alert.error(String(error));
-        setMintStatus(MintStatus.Ready);
-      });
+    // const networkUrl = algodContext.network === "Testnet" ? "testnet." : "";
+
+    // props
+    //   .onMint(tableData)
+    //   .then((assetInfo) => {
+    //     // console.log(assetIds);
+    //     if (!assetInfo) {
+    //       setMintStatus(MintStatus.Ready);
+    //       return;
+    //     }
+    //     setAssets(
+    //       assetInfo.map((info) => ({
+    //         assetId: info.assetId,
+    //         assetCid: info.assetCid,
+    //         url:
+    //           "https://" + networkUrl + "algoexplorer.io/asset/" + info.assetId,
+    //       }))
+    //     );
+    //     setMintStatus(MintStatus.Completed);
+    //     alert.success("Mint completed");
+    //   })
+    //   .catch((error) => {
+    //     alert.error(String(error));
+    //     setMintStatus(MintStatus.Ready);
+    //   });
   };
 
   return (
@@ -256,7 +287,7 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
       <div className="container mx-auto">
         <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
           <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
-            <table className="min-w-full leading-normal">
+            <table className="min-w-full leading-normal table-auto">
               <thead>
                 <tr>
                   {headers.map((header, i) => (
@@ -299,7 +330,8 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
                         id={item.data.id + "name"}
                         type="text"
                         className="outline-none border-0 focus:border-b-2 focus:border-blue-500"
-                        placeholder="Enter name"
+                        placeholder="Name"
+                        maxLength={16}
                         defaultValue={item.data.name}
                         onClick={handleInputClick}
                         onChange={handleInputChange}
@@ -311,25 +343,47 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
                         id={item.data.id + "unit"}
                         type="text"
                         className="outline-none border-0 focus:border-b-2 focus:border-blue-500"
-                        placeholder="Enter NFT unit name"
+                        placeholder="Unit name"
+                        maxLength={4}
+                        onClick={handleInputClick}
                         onChange={handleInputChange}
                       />
                     </td>
                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                        <span
-                          aria-hidden="true"
-                          className="absolute inset-0 bg-green-200 opacity-50 rounded-full"
-                        ></span>
-                        <span className="relative">ARC3</span>
-                      </span>
+                      <input
+                        ref={item.refs.decimal}
+                        id={item.data.id + "decimal"}
+                        type="number"
+                        max={10}
+                        min={0}
+                        className="outline-none border-0 w-full focus:border-b-2 focus:border-blue-500  disabled:text-gray-400 disabled:bg-transparent"
+                        placeholder="Decimals (0-10)"
+                        onClick={handleInputClick}
+                        onChange={handleInputChange}
+                        defaultValue={0}
+                        disabled
+                      />
+                    </td>
+                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                      <select
+                        id={item.data.id + "standard"}
+                        onChange={handleSelectChange}
+                        className="outline-none border-2 border-blue-500 bg-blue-500 rounded-lg p-1 text-white shadow-xl"
+                      >
+                        <option value={NFTStandard.pureArc3}>Pure ARC3</option>
+                        <option value={NFTStandard.fracArc3}>
+                          Fractional ARC3
+                        </option>
+                      </select>
                     </td>
                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                       <textarea
                         ref={item.refs.description}
                         id={item.data.id + "description"}
                         className="outline-none border-0 w-full break-words focus:border-b-2 focus:border-blue-500 resize-none"
-                        placeholder="Enter NFT Description"
+                        placeholder="Description"
+                        maxLength={512}
+                        onClick={handleInputClick}
                         onChange={handleInputChange}
                       ></textarea>
                     </td>
@@ -375,7 +429,9 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
                             <p className="text-sm">
                               <span>
                                 <a
-                                  href={"https://ipfs.io/ipfs/" + assets[i].assetCid}
+                                  href={
+                                    "https://ipfs.io/ipfs/" + assets[i].assetCid
+                                  }
                                   target="_blank"
                                   rel="noreferrer"
                                   className="text-blue-500"
