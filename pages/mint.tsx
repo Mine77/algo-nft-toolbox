@@ -24,9 +24,11 @@ const useTxParams = (network) => {
 };
 
 interface ARC3JSON {
-  title: string;
-  type: string;
-  properties: Object;
+  name: string;
+  description: string;
+  image: string;
+  image_integrity: string;
+  image_mimetype: string;
 }
 
 const MintNFT: NextPage = () => {
@@ -67,7 +69,7 @@ const MintNFT: NextPage = () => {
     return p;
   };
 
-  const createAsset  = (assetData) => {
+  const createAsset = (assetData) => {
     var p = new Promise<Array<number>>(async (resolve, reject) => {
       if (txParams.isError) reject("Get transaction parameter error");
       const txgg = ConstructGroupedCreateAssetTx(
@@ -131,13 +133,13 @@ const MintNFT: NextPage = () => {
 
   const handleMint = (tableData: TableDataAPI) => {
     var p = new Promise(async (resolve, reject) => {
-      try {
-        const imgFiles = tableData.map((data) => {
-          return data.imgFile;
-        });
+      const imgFiles = tableData.map((data) => {
+        return data.imgFile;
+      });
 
-        const imgIntegritiy = [];
-        for (let i = 0; i < tableData.length; i++) {
+      const imgIntegritiy = [];
+      for (let i = 0; i < tableData.length; i++) {
+        try {
           const integrity = await ssri
             .create({
               algorithms: ["sha256"],
@@ -145,81 +147,67 @@ const MintNFT: NextPage = () => {
             .update(tableData[i].image)
             .digest();
           imgIntegritiy.push(integrity.toString());
+        } catch (error) {
+          reject(String(error));
         }
+      }
 
-        const imgCids = await uploadToIPFS(imgFiles);
+      const imgCids = await uploadToIPFS(imgFiles);
 
-        const arc3JSONs: Array<ARC3JSON> = tableData.map((data, i) => {
-          return {
-            title: "Token Metadata",
-            type: "object",
-            properties: {
-              name: {
-                type: "string",
-                description: data.name,
-              },
-              decimals: {
-                type:"integer",
-                description: data.decimal.toString()
-              },
-              description: {
-                type: "string",
-                description: data.description,
-              },
-              image: {
-                type: "string",
-                description: "ipfs://" + imgCids[i],
-              },
-              image_integrity: {
-                type: "string",
-                description: imgIntegritiy[i],
-              },
-              image_mimetype: {
-                type: "string",
-                description: imgFiles[i].type,
-              },
-            },
-          };
-        });
+      const arc3JSONs: Array<ARC3JSON> = tableData.map((data, i) => {
+        return {
+          name: data.name,
+          description: data.description,
+          image: "ipfs://" + imgCids[i],
+          image_integrity: imgIntegritiy[i],
+          image_mimetype: imgFiles[i].type,
+        };
+      });
 
-        console.log(arc3JSONs);
+      console.log(arc3JSONs);
 
-        var arc3JSONSha256s = [];
-        var arc3JSONCids = [];
-        for (let i = 0; i < arc3JSONs.length; i++) {
-          const arc3JSONString = JSON.stringify(arc3JSONs[i]);
+      var arc3JSONSha256s = [];
+      var arc3JSONCids = [];
+      for (let i = 0; i < arc3JSONs.length; i++) {
+        const arc3JSONString = JSON.stringify(arc3JSONs[i]);
+        try {
           const arc3JSONSha256 = await createHash("sha256")
             .update(arc3JSONString, "utf-8")
             .digest();
           arc3JSONSha256s.push(new Uint8Array(arc3JSONSha256));
-
           const arc3Blob = new Blob([JSON.stringify(arc3JSONs[i])], {
             type: "application/json",
           });
           const arc3File = new File([arc3Blob], arc3JSONSha256 + ".json");
           const arc3JSONCid = await uploadToIPFS([arc3File]);
           arc3JSONCids.push(arc3JSONCid[0]);
+        } catch (error) {
+          reject(String(error));
         }
+      }
 
-        const assetData: Array<AssetData> = tableData.map((data, i) => {
+      const assetData: Array<AssetData> = tableData.map((data, i) => {
+        return {
+          assetName: data.name,
+          unitName: data.unit,
+          decimal: Number(data.decimal),
+          assetUrl: "ipfs://" + arc3JSONCids[i] + "#arc3",
+          assetMetadataHash: arc3JSONSha256s[i],
+          note: "Creation of an ARC3 NFT",
+        };
+      });
+
+      console.log(assetData);
+
+      try {
+        const assetIds = await createAsset(assetData);
+        var assetInfo = assetIds.map((id, i) => {
           return {
-            assetName: data.name,
-            unitName: data.unit,
-            decimal: Number(data.decimal),
-            assetUrl: "ipfs://" + arc3JSONCids[i] + "#arc3",
-            assetMetadataHash: arc3JSONSha256s[i],
-            note: "Creation of an ARC3 NFT",
+            assetId: id,
+            assetCid: arc3JSONCids[i],
           };
         });
-
-        console.log(assetData);
-
-        const assetIds = await createAsset(assetData);
-        var assetInfo = assetIds.map((id,i)=>{return {
-          assetId:id,
-          assetCid: arc3JSONCids[i]
-        }})
-        if (assetIds === [] ) assetInfo=null;
+        if (assetIds.length == 0) assetInfo = null;
         resolve(assetInfo);
       } catch (error) {
         reject(String(error));

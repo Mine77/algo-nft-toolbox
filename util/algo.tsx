@@ -1,5 +1,5 @@
 import algosdk from "algosdk";
-import AlgodClient from "algosdk/dist/types/src/client/v2/algod/algod";
+import AlgodClient from "algosdk/src/client/v2/algod/algod";
 
 export interface AssetData {
   assetName: string;
@@ -12,7 +12,7 @@ export interface AssetData {
 
 function ConstructCreateAssetTx(address: string, data: AssetData, txParams) {
   const decimals = data.decimal;
-  const totalIssuance = 1 * (10 ** decimals);
+  const totalIssuance = 1 * 10 ** decimals;
   const manager = address;
   const reserve = address;
   const freeze = address;

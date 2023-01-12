@@ -126,7 +126,7 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
   };
 
   useEffect(() => {
-    if (nftDataArray === []) return;
+    if (nftDataArray.length == 0) return;
     nftDataArray.map((item) => {
       item.refs.name.current.value = item.data.name;
       item.refs.unit.current.value = item.data.unit;

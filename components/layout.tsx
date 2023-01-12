@@ -1,7 +1,11 @@
 import type { NextPage } from "next";
 import NavBar from "./navbar";
 
-const Layout: NextPage = ({ children }) => {
+// interface LayoutProps {
+//   children: React.ReactNode;
+// }
+
+const Layout = ({ children }) => {
   return (
     <main className=" rounded-2xl h-screen w-screen relative">
       <div className=" bg-gray-100 dark:bg-gray-800 flex items-start justify-between static">

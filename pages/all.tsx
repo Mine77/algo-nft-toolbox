@@ -13,8 +13,7 @@ export const Events: NextPage = () => {
           <p className="text-4xl font-bold text-gray-800 mb-4">All NFT</p>
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-12">
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-12"></div>
     </Layout>
   );
 };
