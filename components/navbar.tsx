@@ -51,20 +51,20 @@ const NavBar = () => {
               }
             >
               <Link href={item.href}>
-                <a className="w-full font-thin uppercase flex items-center p-4 my-2 transition-colors duration-200 justify-start ">
+                <p className="w-full font-thin uppercase flex items-center p-4 my-2 transition-colors duration-200 justify-start ">
                   <span className="mr-4 text-sm font-normal">{item.texts}</span>
-                </a>
+                </p>
               </Link>
             </div>
           ))}
           <div className={navBarItemUnSelectedStyle}>
             <Link href="/">
-              <a
+              <p
                 onClick={handleLogout}
                 className="w-full font-thin uppercase flex items-center p-4 my-2 transition-colors duration-200 justify-start "
               >
                 <span className="mr-4 text-sm font-normal">Logout</span>
-              </a>
+              </p>
             </Link>
           </div>
         </div>

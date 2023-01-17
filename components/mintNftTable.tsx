@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import Link from "next/link";
 import AlertContext from "./context/alertContext";
 import { AlgodContext } from "./context/algodContext";
 import FileInputButton from "./fileInputButton";
@@ -138,10 +139,15 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
     const id = event.target.id;
     const index = id.match(/\d+/)[0];
     const type = id.match(/\D+/)[0];
-    const value = event.target.value;
-    if (type === "decimal" && (Number(value) > 10 || Number(value) < 0)) {
-      event.target.value = null;
+    var value = event.target.value;
+    if (type === "name") {
+      const size = new Buffer(value).length;
+      console.log(size);
+      if (size > 32) {
+        value = null;
+      }
     }
+
     let newNftDataArray: NftDataArray = [...nftDataArray];
     newNftDataArray[parseInt(index)].data[type] = value;
     setNftDataArray(newNftDataArray);
@@ -412,19 +418,19 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
                             <p className="text-sm">
                               Asset ID:
                               <span>
-                                <a
+                                <Link
                                   href={assets[i].url}
                                   target="_blank"
                                   rel="noreferrer"
                                   className="text-blue-500"
                                 >
                                   {assets[i].assetId}
-                                </a>
+                                </Link>
                               </span>
                             </p>
                             <p className="text-sm">
                               <span>
-                                <a
+                                <Link
                                   href={
                                     "https://ipfs.io/ipfs/" + assets[i].assetCid
                                   }
@@ -433,7 +439,7 @@ const MintNftTable = (props: { data: PropsDataArray; onMint: Function }) => {
                                   className="text-blue-500"
                                 >
                                   IPFS Link
-                                </a>
+                                </Link>
                               </span>
                             </p>
                           </div>

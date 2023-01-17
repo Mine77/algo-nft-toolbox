@@ -43,6 +43,11 @@ export const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     await SendTransaction(algodClient, signedTxgBlob);
+  } catch (error) {
+    res.status(400).send({ error: String(error) });
+  }
+
+  try {
     var assetIds = [];
     var promise = [];
     txIdArray.map((txId) => {
